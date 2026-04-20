@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           rm -f pnpm-lock.yaml package-lock.json
-          pnpm add electron-vite@5.1.0 -D
+          pnpm add electron-vite@6.0.0-beta.1 -D
           pnpm install
 
       - name: Build
