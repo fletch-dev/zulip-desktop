@@ -1,6 +1,43 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {defineConfig} from "electron-vite";
+import {resolve} from "node:path";
+import {copyFileSync, mkdirSync, existsSync, readdirSync} from "node:fs";
+
+// plo:
+function copyCssPlugin() {
+  return {
+    name: "copy-css",
+    closeBundle() {
+      const srcDir = resolve(__dirname, "app/renderer/css");
+      const destDir = resolve(__dirname, "out/renderer/css");
+      const publicCssDir = resolve(__dirname, "public/css");
+
+      if (!existsSync(destDir)) {
+        mkdirSync(destDir, {recursive: true});
+      }
+
+      if (!existsSync(publicCssDir)) {
+        mkdirSync(publicCssDir, {recursive: true});
+      }
+
+      const files = readdirSync(srcDir);
+      files.forEach((file) => {
+        if (file.endsWith(".css")) {
+          copyFileSync(
+            resolve(srcDir, file),
+            resolve(destDir, file),
+          );
+          // Also copy to public folder for webview CSS injection
+          copyFileSync(
+            resolve(srcDir, file),
+            resolve(publicCssDir, file),
+          );
+        }
+      });
+    },
+  };
+}
 
 export default defineConfig({
   main: {
@@ -50,6 +87,7 @@ export default defineConfig({
           about: "app/renderer/about.html",
           preference: "app/renderer/preference.html",
         },
+        plugins: [copyCssPlugin()], // plo:
       },
     },
     root: ".",

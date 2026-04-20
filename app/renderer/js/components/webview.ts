@@ -1,9 +1,11 @@
 import type {WebContents} from "electron/main";
 import fs from "node:fs";
+import path from "node:path";
 
 import * as remote from "@electron/remote";
 import {app, dialog} from "@electron/remote";
 
+import {bundlePath, publicPath, cssPath} from "../../../common/paths.ts";
 import * as ConfigUtil from "../../../common/config-util.ts";
 import {type Html, html} from "../../../common/html.ts";
 import * as t from "../../../common/translation-util.ts";
@@ -321,6 +323,20 @@ export default class WebView {
     this.properties.onTitleChange();
     // Injecting preload css in webview to override some css rules
     (async () => this.getWebContents().insertCSS(preloadCss))();
+
+    // plo: Try to load additional.css from public/css/ folder (for both DEV and PROD)
+    const additionalCssPath = path.join(cssPath, "additional.css");
+    console.log("[WebView] publicPath:", publicPath);
+    console.log("[WebView] additionalCssPath:", additionalCssPath);
+    console.log("[WebView] exists:", fs.existsSync(additionalCssPath));
+    if (fs.existsSync(additionalCssPath)) {
+      const cssContent = fs.readFileSync(additionalCssPath, "utf8");
+      console.log("[WebView] CSS content length:", cssContent.length);
+      (async () => {
+        const result = await this.getWebContents().insertCSS(cssContent);
+        console.log("[WebView] insertCSS result:", result);
+      })();
+    }
 
     // Get customCSS again from config util to avoid warning user again
     const customCss = ConfigUtil.getConfigItem("customCSS", null);

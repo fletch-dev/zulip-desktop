@@ -1,0 +1,89 @@
+/*******************
+ *  Additional rules  (plo: )*
+ *******************/
+
+/* --- Красный знак mention + красный заголовок канала/рахдела при mention --- */
+
+.left-sidebar-title:has(~ .markers-and-unreads .unread_mention_info:not(.no-display)) {
+  color: red;
+  font-weight: bold;
+}
+
+.stream-name:has(~ .stream-markers-and-unreads .unread_mention_info:not(.no-display)) {
+  color: red;
+  font-weight: bold;
+  opacity: var(--opacity-sidebar-heading);
+}
+
+#direct-messages-section-header .left-sidebar-title:has(~ .heading-markers-and-unreads .unread_count:not(.hide)) {
+  color: red;
+  font-weight: bold;
+}
+
+a:has(.unread_count:not(.zero_count)) .conversation-partners {
+  color: red;
+  font-weight: bold;
+  opacity: var(--opacity-sidebar-heading);
+}
+
+.unread_mention_info {
+  color: red;
+  font-weight: bold;
+}
+
+/* --- Оставляем для показа только верхний уровень цитаты --- */
+
+/* База */
+.message_content blockquote {
+  position: relative;
+}
+
+/* Скрываем все вложенные уровни глубже первого */
+.message_content blockquote blockquote {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  margin: 0;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+}
+
+/* Показываем только 1 уровень при наведении */
+.message_content blockquote:hover > blockquote {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 6px;
+}
+
+/* Индикатор "есть вложение" */
+.message_content blockquote > blockquote::before {
+  content: "↳ скрытая цитата";
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+/* При hover меняем текст */
+.message_content blockquote:hover > blockquote::before {
+  content: "↳ скрытая цитата (отпустить — скрыть)";
+}
+
+/* Убираем лишние отступы */
+.message_content blockquote p {
+  margin: 4px 0;
+}
+
+/* Чтобы не было схлопывания margin */
+.message_content blockquote > *:first-child {
+  margin-top: 0;
+}
+
+.message_content blockquote > *:last-child {
+  margin-bottom: 0;
+}
+/*
+.message_content blockquote > p:first-child:has(.user-mention) {
+    display: none;
+}
+*/
