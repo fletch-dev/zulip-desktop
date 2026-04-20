@@ -14,8 +14,11 @@ jobs:
       matrix:
         include:
           - os: macos-latest
+            build_args: "-c.mac.target=dmg -c.mac.target=pkg -c.publish=none"
           - os: windows-latest
+            build_args: "-c.win.target=nsis-web -c.win.target=msi -c.publish=none"
           - os: ubuntu-latest
+            build_args: "-c.linux.target=deb -c.linux.target=AppImage -c.linux.target=tar.xz -c.publish=none"
 
     runs-on: ${{ matrix.os }}
 
@@ -45,7 +48,7 @@ jobs:
           cat package.json | jq 'del(.build.win.azureSignOptions)' > package.json.tmp && mv package.json.tmp package.json
 
       - name: Build
-        run: node --run dist
+        run: node --run dist -- ${{ matrix.build_args }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: 'true'
