@@ -14,11 +14,11 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            build_args: "-c.mac.target=dmg -c.mac.target=pkg -c.publish=none"
+            build_args: "--mac dmg --mac pkg"
           - os: windows-latest
-            build_args: "-c.win.target=nsis-web -c.win.target=msi -c.publish=none"
+            build_args: "--win nsis-web --win msi"
           - os: ubuntu-latest
-            build_args: "-c.linux.target=deb -c.linux.target=AppImage -c.linux.target=tar.xz -c.publish=none"
+            build_args: "--linux deb --linux AppImage --linux tar.gz"
 
     runs-on: ${{ matrix.os }}
 
