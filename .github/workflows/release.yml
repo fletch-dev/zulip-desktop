@@ -1,0 +1,81 @@
+name: Build Release
+
+on:
+  push:
+#    branches:
+#      - '**'
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            build_args: "--mac dmg --mac pkg --x64 --arm64"
+          - os: windows-latest
+            build_args: "--win nsis-web --win msi"
+          - os: ubuntu-latest
+            build_args: "--linux deb --linux AppImage --linux tar.gz"
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          rm -f pnpm-lock.yaml package-lock.json
+          pnpm add electron-vite@6.0.0-beta.1 -D
+          pnpm install
+
+      - name: Remove Azure signing
+        run: |
+          cat package.json | jq 'del(.build.win.azureSignOptions)' > package.json.tmp && mv package.json.tmp package.json
+
+      - name: Build
+        run: node --run dist -- ${{ matrix.build_args }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: 'true'
+          FORCE_COLOR: '0'
+          ELECTRON_DISABLE_SANDBOX: 'true'
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: release-${{ matrix.os }}
+          path: dist/*
+
+  # release:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Download all artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: artifacts
+
+  #     - name: Create Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: artifacts/**/*
+  #         draft: false
+  #         prerelease: false
+  #         token: ${{ secrets.MY_GITHUB_TOKEN }}
