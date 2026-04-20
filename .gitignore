@@ -24,3 +24,5 @@ config.gypi
 # tests/package.json
 
 .python-version
+/public/css/
+/public/js/
