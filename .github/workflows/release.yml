@@ -2,6 +2,8 @@ name: Build Release
 
 on:
   push:
+    branches:
+      - '**'
     tags:
       - 'v*'
 
@@ -31,6 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           rm -f pnpm-lock.yaml
+          pnpm add electron-vite@latest -D
           pnpm install
 
       - name: Build
