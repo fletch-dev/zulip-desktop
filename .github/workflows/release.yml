@@ -40,6 +40,10 @@ jobs:
           pnpm add electron-vite@6.0.0-beta.1 -D
           pnpm install
 
+      - name: Remove Azure signing
+        run: |
+          cat package.json | jq 'del(.build.win.azureSignOptions)' > package.json.tmp && mv package.json.tmp package.json
+
       - name: Build
         run: node --run dist
         env:
