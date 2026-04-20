@@ -47,7 +47,7 @@ jobs:
           CI: 'true'
           FORCE_COLOR: '0'
           ELECTRON_DISABLE_SANDBOX: 'true'
-          AZURE_TENANT_ID: ''
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
