@@ -10,11 +10,11 @@ import {BrowserWindow, Menu} from "@electron/remote";
 
 import * as t from "../../../common/translation-util.ts";
 
-export const contextMenu = (
+export const contextMenu = async (
   webContents: WebContents,
   event: Event,
   properties: ContextMenuParams,
-) => {
+): Promise<void> => {
   const isText = properties.selectionText !== "";
   const isLink = properties.linkURL !== "";
   const linkUrl = isLink ? new URL(properties.linkURL) : undefined;
@@ -27,7 +27,49 @@ export const contextMenu = (
     },
   });
 
+  // plo: Check if click was on a message row
+  const isMessageRow = (): Promise<boolean> => {
+    return webContents.executeJavaScript(`
+      (function() {
+        const element = document.elementFromPoint(${properties.x}, ${properties.y});
+        return !!element?.closest('.message_row, .message_content');
+      })()
+    `);
+  };
+
+  // plo: Function to trigger reply
+  const triggerReply = async (): Promise<void> => {
+    await webContents.executeJavaScript(`
+      (function() {
+        const element = document.elementFromPoint(${properties.x}, ${properties.y});
+        const row = element?.closest('.message_row');
+        if (!row) return;
+
+        const actionsBtn = row.querySelector('.message-actions-menu-button');
+        if (!actionsBtn) return;
+
+        actionsBtn.click();
+
+        setTimeout(() => {
+          const replyBtn = document.querySelector('.respond_button');
+          if (replyBtn) replyBtn.click();
+        }, 30);
+      })()
+    `);
+  };
+
+  // plo: Check if we should show Reply option
+  const shouldShowReply = await isMessageRow();
+
   let menuTemplate: MenuItemConstructorOptions[] = [
+    // plo: Reply menu item - added at the top
+    {
+      label: t.__("Reply"),
+      visible: shouldShowReply,
+      click() {
+        triggerReply();
+      },
+    },
     {
       label: t.__("Add to Dictionary"),
       visible:

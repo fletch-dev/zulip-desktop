@@ -264,8 +264,9 @@ export default class WebView {
       }
     });
 
-    webContents.addListener("context-menu", (event, menuParameters) => {
-      contextMenu(webContents, event, menuParameters);
+    // plo:
+    webContents.addListener("context-menu", async (event, menuParameters) => {
+      await contextMenu(webContents, event, menuParameters);
     });
 
     this.$webview.addEventListener("dom-ready", () => {
