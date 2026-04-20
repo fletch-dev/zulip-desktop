@@ -48,7 +48,7 @@
     "copyright": "©2020 Kandra Labs, Inc.",
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "build/icon-macos.png",
+      "icon": "build/icon-plo-macos.png",
       "target": [
         {
           "target": "default",
@@ -70,7 +70,7 @@
     },
     "linux": {
       "category": "Chat;GNOME;GTK;Network;InstantMessaging",
-      "icon": "build/zulip.png",
+      "icon": "build/zulip-plo.png",
       "description": "Zulip Desktop Client for Linux",
       "target": [
         "deb",
@@ -116,7 +116,7 @@
           ]
         }
       ],
-      "icon": "build/icon.ico",
+      "icon": "build/icon-plo.ico",
       "azureSignOptions": {
         "endpoint": "https://eus.codesigning.azure.net/",
         "codeSigningAccountName": "kandralabs",
