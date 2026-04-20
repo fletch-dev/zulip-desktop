@@ -32,7 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm -f pnpm-lock.yaml package-lock.json
+          if exist pnpm-lock.yaml del pnpm-lock.yaml
+          if exist package-lock.json del package-lock.yaml
           pnpm add electron-vite@6.0.0-beta.1 -D
           pnpm install
 
