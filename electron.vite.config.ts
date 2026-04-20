@@ -4,37 +4,69 @@ import {defineConfig} from "electron-vite";
 import {resolve} from "node:path";
 import {copyFileSync, mkdirSync, existsSync, readdirSync} from "node:fs";
 
-// plo:
-function copyCssPlugin() {
+// plo: Copy CSS and JS from app/renderer to public/ and out/renderer/
+function copyAssetsPlugin() {
   return {
-    name: "copy-css",
+    name: "copy-assets",
     closeBundle() {
-      const srcDir = resolve(__dirname, "app/renderer/css");
-      const destDir = resolve(__dirname, "out/renderer/css");
-      const publicCssDir = resolve(__dirname, "public/css");
+      // === Copy CSS files ===
+      const cssSrcDir = resolve(__dirname, "app/renderer/css");
+      const cssDestDir = resolve(__dirname, "out/renderer/css");
+      const cssPublicDir = resolve(__dirname, "public/css");
 
-      if (!existsSync(destDir)) {
-        mkdirSync(destDir, {recursive: true});
+      if (!existsSync(cssDestDir)) {
+        mkdirSync(cssDestDir, {recursive: true});
+      }
+      if (!existsSync(cssPublicDir)) {
+        mkdirSync(cssPublicDir, {recursive: true});
       }
 
-      if (!existsSync(publicCssDir)) {
-        mkdirSync(publicCssDir, {recursive: true});
-      }
-
-      const files = readdirSync(srcDir);
-      files.forEach((file) => {
+      const cssFiles = readdirSync(cssSrcDir);
+      for (const file of cssFiles) {
         if (file.endsWith(".css")) {
+          // Copy to out/renderer/css (production)
           copyFileSync(
-            resolve(srcDir, file),
-            resolve(destDir, file),
+            resolve(cssSrcDir, file),
+            resolve(cssDestDir, file),
           );
-          // Also copy to public folder for webview CSS injection
+          // Copy to public/css (dev mode webview)
           copyFileSync(
-            resolve(srcDir, file),
-            resolve(publicCssDir, file),
+            resolve(cssSrcDir, file),
+            resolve(cssPublicDir, file),
           );
         }
-      });
+      }
+
+      // === Copy JS files ===
+      const jsSrcDir = resolve(__dirname, "app/renderer/js");
+      const jsDestDir = resolve(__dirname, "out/renderer/js");
+      const jsPublicDir = resolve(__dirname, "public/js");
+
+      // Check if source directory exists and has JS files
+      if (existsSync(jsSrcDir)) {
+        if (!existsSync(jsDestDir)) {
+          mkdirSync(jsDestDir, {recursive: true});
+        }
+        if (!existsSync(jsPublicDir)) {
+          mkdirSync(jsPublicDir, {recursive: true});
+        }
+
+        const jsFiles = readdirSync(jsSrcDir);
+        for (const file of jsFiles) {
+          if (file.endsWith(".js")) {
+            // Copy to out/renderer/js (production)
+            copyFileSync(
+              resolve(jsSrcDir, file),
+              resolve(jsDestDir, file),
+            );
+            // Copy to public/js (dev mode webview)
+            copyFileSync(
+              resolve(jsSrcDir, file),
+              resolve(jsPublicDir, file),
+            );
+          }
+        }
+      }
     },
   };
 }
@@ -87,7 +119,7 @@ export default defineConfig({
           about: "app/renderer/about.html",
           preference: "app/renderer/preference.html",
         },
-        plugins: [copyCssPlugin()], // plo:
+        plugins: [copyAssetsPlugin()], // plo:
       },
     },
     root: ".",

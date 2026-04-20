@@ -339,6 +339,20 @@ export default class WebView {
       })();
     }
 
+    // plo: Inject quick reply JavaScript from public/js/quick-reply.js
+    const quickReplyJsPath = path.join(cssPath, "..", "js", "quick-reply.js");
+    if (fs.existsSync(quickReplyJsPath)) {
+      const jsContent = fs.readFileSync(quickReplyJsPath, "utf8");
+      (async () => {
+        try {
+          await this.getWebContents().executeJavaScript(jsContent);
+          console.log("[WebView] Quick reply script injected");
+        } catch (error) {
+          console.error("[WebView] Failed to inject quick reply script:", error);
+        }
+      })();
+    }
+
     // Get customCSS again from config util to avoid warning user again
     const customCss = ConfigUtil.getConfigItem("customCSS", null);
     this.customCss = customCss;

@@ -22,7 +22,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "electron-vite dev",
+    "predev": "node -e \"const{existsSync,mkdirSync,readdirSync,copyFileSync}=require('fs'),r=require('path');const s='app/renderer',d='public';['css','js'].forEach(t=>{const src=r.join(s,t),dst=r.join(d,t);if(!existsSync(dst))mkdirSync(dst,{recursive:true});if(existsSync(src))readdirSync(src).forEach(f=>{if(f.endsWith('.'+t))copyFileSync(r.join(src,f),r.join(dst,f))})});\"",
+    "dev": "npm run predev && electron-vite dev",
     "preview": "electron-vite preview",
     "watch-ts": "tsc -w",
     "postinstall": "electron-builder install-app-deps",
