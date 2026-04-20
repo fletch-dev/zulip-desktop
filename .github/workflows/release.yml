@@ -38,6 +38,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: 'true'
+          FORCE_COLOR: '0'
+          ELECTRON_DISABLE_SANDBOX: 'true'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
