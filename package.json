@@ -41,7 +41,9 @@
     "appId": "org.zulip.zulip-electron",
     "asar": true,
     "asarUnpack": [
-      "**/*.node"
+      "**/*.node",
+      "**/node_modules/gatemaker/**/*",
+      "**/node_modules/fs-xattr/**/*"
     ],
     "files": [
       "out/**/*"
