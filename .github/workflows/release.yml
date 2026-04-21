@@ -14,7 +14,7 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            build_args: "--mac dmg --mac pkg"
+            build_args: "--mac dmg --mac pkg --x64 --arm64"
           - os: windows-latest
             build_args: "--win nsis-web --win msi"
           - os: ubuntu-latest
@@ -62,20 +62,20 @@ jobs:
           name: release-${{ matrix.os }}
           path: dist/*
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
+  # release:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+  #   steps:
+  #     - name: Download all artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: artifacts
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/**/*
-          draft: false
-          prerelease: false
-          token: ${{ secrets.MY_GITHUB_TOKEN }}
+  #     - name: Create Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: artifacts/**/*
+  #         draft: false
+  #         prerelease: false
+  #         token: ${{ secrets.MY_GITHUB_TOKEN }}
